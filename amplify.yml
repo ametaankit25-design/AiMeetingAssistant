@@ -1,0 +1,39 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - cd frontend
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: frontend/dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - frontend/node_modules/**/*
+backend:
+  phases:
+    preBuild:
+      commands:
+        - cd backend
+        - npm ci
+        - cd ..
+        - python3 -m venv venv
+        - source venv/bin/activate || . venv/Scripts/activate
+        - pip install --upgrade pip
+        - pip install transformers librosa numpy torch
+    build:
+      commands:
+        - echo "Backend dependencies installed"
+  artifacts:
+    baseDirectory: backend
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - backend/node_modules/**/*
+      - venv/**/*

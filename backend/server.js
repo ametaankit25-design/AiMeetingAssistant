@@ -6,10 +6,17 @@ const fs = require("fs");
 const processRouter = require("./routes/process");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // ── Middleware ──────────────────────────────────────────────
-app.use(cors());
+// CORS configuration - allow requests from frontend
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || '*', // In production, set to your Amplify URL
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+  maxAge: 86400, // 24 hours
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // ── Health check endpoint ──────────────────────────────────
@@ -39,9 +46,10 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // ── Start server ───────────────────────────────────────────
-const server = app.listen(PORT, "127.0.0.1", () => {
+const HOST = process.env.HOST || "0.0.0.0"; // Allow external connections in production
+const server = app.listen(PORT, HOST, () => {
   console.log(
-    `AI Meeting Assistant backend running on http://127.0.0.1:${PORT}`
+    `AI Meeting Assistant backend running on http://${HOST}:${PORT}`
   );
 });
 
